@@ -3,6 +3,10 @@
         android:label="veselica_radar"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyD8cmo5CmNHgUjR1VgGGLRBysKE_yj8AXM"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
