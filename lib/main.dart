@@ -41,6 +41,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
+  final selectedItemColor = Colors.amber[800];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -48,8 +49,20 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  void _handleLogout(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    authProvider.logout();
+    dynamic isAuthenticated = authProvider.isAuthenticated;
+    print('Is authenticated: ${isAuthenticated}');
+
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    final authProvider = Provider.of<AuthProvider>(context);
+    final isAuthenticated = authProvider.isAuthenticated;
+
     return Scaffold(
       body: IndexedStack(
         index: _selectedIndex,
@@ -64,21 +77,53 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: isAuthenticated ? BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+              icon: Icon(Icons.home),
+              label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.login),
-            label: 'Register',
+            icon: Icon(Icons.logout),
+            label: 'Logout',
           ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.amber[800],
-        onTap: _onItemTapped,
+        onTap: (index) {
+          if (isAuthenticated && index == 1) {
+            print("Handlamo login");
+            _handleLogout(context);
+          } else {
+            print("change view wuhuuu");
+            _onItemTapped(index);
+          }
+        },
+      ) : BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.login),
+              label: 'Register',
+            ),
+          ],
+
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.amber[800],
+          onTap: (index) {
+          if (isAuthenticated && index == 1) {
+            print("Handlamo login");
+            _handleLogout(context);
+          } else {
+            print("change view wuhuuu");
+            _onItemTapped(index);
+          }
+      },
       ),
+
     );
   }
 }

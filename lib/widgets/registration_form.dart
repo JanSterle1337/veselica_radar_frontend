@@ -55,11 +55,13 @@ class _RegistrationFormState extends State<RegistrationForm> {
 
         if (response.statusCode == 200 || response.statusCode == 201) {
 
+          print(jsonDecode(response.body));
           final responseData = jsonDecode(response.body);
           final token = responseData['token'];
           final role = responseData['role'];
+          final userId = responseData['user_id'];
 
-          Provider.of<AuthProvider>(context, listen: false).login(token, role);
+          Provider.of<AuthProvider>(context, listen: false).login(token, role, userId);
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Registration successful!')),
