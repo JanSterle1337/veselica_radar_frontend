@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:veselica_radar/screens/login_screen.dart';
 import 'services/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'screens/home_screen.dart';
@@ -75,6 +76,12 @@ class _MainScreenState extends State<MainScreen> {
               });
             },
           ),
+          LoginScreen(
+              onSuccess: () {
+                setState(() {
+                  _selectedIndex = 0;
+                });
+              })
         ],
       ),
       bottomNavigationBar: isAuthenticated ? BottomNavigationBar(
@@ -106,9 +113,13 @@ class _MainScreenState extends State<MainScreen> {
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.login),
+              icon: Icon(Icons.app_registration),
               label: 'Register',
             ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.login),
+              label: 'Login'
+            )
           ],
 
           currentIndex: _selectedIndex,
