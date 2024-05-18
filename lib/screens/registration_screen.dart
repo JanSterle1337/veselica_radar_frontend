@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:veselica_radar/widgets/registration_form.dart';
 
 class RegistrationScreen extends StatelessWidget {
   const RegistrationScreen({Key? key}) : super(key: key);
@@ -8,9 +9,10 @@ class RegistrationScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Registration'),
       ),
-      body: const Center(
-        child: Text('Registration screen')
-      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: RegistrationForm(),
+      )
     );
   }
 }
