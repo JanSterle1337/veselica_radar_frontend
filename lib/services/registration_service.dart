@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class RegistrationService {
-  Future<bool> registerUser(UserRegisterDTO user) async {
+  Future<http.Response> registerUser(UserRegisterDTO user) async {
 
       const String url = 'http://10.0.2.2:7000/api/auth/register';
 
@@ -24,12 +24,6 @@ class RegistrationService {
         body: jsonEncode(userRegisterDTO.toJson())
       );
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return true;
-      } else {
-        print('Failed to register user: ${response.statusCode}');
-        print('Response body: ${response.body}');
-        return false;
-      }
+      return response;
   }
 }

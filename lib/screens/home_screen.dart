@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:veselica_radar/widgets/bottom_navigation.dart';
 
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -18,6 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
     mapController = controller;
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -29,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
           target: _center,
           zoom: 8.0
         ),
-      )
+      ),
     );
   }
 }

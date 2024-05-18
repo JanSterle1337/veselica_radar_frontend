@@ -1,9 +1,15 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../dto/user_register_dto.dart';
 import '../services/registration_service.dart';
 
 
 class RegistrationForm extends StatefulWidget {
+
+  final VoidCallback onSuccess;
+
+  const RegistrationForm({Key? key, required this.onSuccess}) : super(key: key);
+
   @override
   _RegistrationFormState createState() => _RegistrationFormState();
 }
@@ -35,21 +41,51 @@ class _RegistrationFormState extends State<RegistrationForm> {
         role: 'user',
       );
 
-      bool success = await _registrationService.registerUser(newUser);
+      try {
+        final response = await _registrationService
+            .registerUser(newUser)
+            .timeout(const Duration(seconds: 8));
 
-      setState(() {
-        _isLoading = false;
-      });
+        setState(() {
+          _isLoading = false;
+        });
 
-      if (success) {
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Registration successful!')),
+          );
+          Navigator.pushReplacementNamed(context, '/home');
+        } else if (response.statusCode == 500) {
+          print('Response body: ${response.body}');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Internal Server Error. Please try again later.')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Registration failed.')),
+          );
+        }
+      } on TimeoutException catch (e) {
+        setState(() {
+          _isLoading = false;
+        });
+
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Registration successful!')),
+          SnackBar(content: Text('Request timed out. Please try again.')),
         );
-      } else {
+      } catch (e) {
+        setState(() {
+          _isLoading = false;
+        });
+
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Registration failed.')),
+          SnackBar(content: Text('An error occurred. Please try again.')),
         );
       }
+
+      //bool success = await _registrationService.registerUser(newUser).timeout(const Duration(seconds: 3));
+
+
     }
   }
 
