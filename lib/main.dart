@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'services/auth_provider.dart';
+import 'package:provider/provider.dart';
 import 'screens/home_screen.dart';
 import 'screens/registration_screen.dart';
 import 'widgets/bottom_navigation.dart';
@@ -12,6 +14,16 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+        create: (_) => AuthProvider(),
+        child: MaterialApp(
+          title: 'Flutter Demo',
+          theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+          home: MainScreen(),
+        )
+    );
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -70,59 +82,3 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 }
-
-/*class MyApp extends StatefulWidget {
-  const MyApp({super.key});
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  late GoogleMapController mapController;
-
-  final LatLng _center = const LatLng(46.149, 15.2);
-
-  void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
-  }
-
-  int _selectedIndex = 0;
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    switch (index) {
-      case 0:
-        Navigator.pushReplacementNamed(context, '/');
-        break;
-      case 1:
-        Navigator.pushReplacementNamed(context, '/home');
-        break;
-    }
-  }
-
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: Colors.green[700],
-      ),
-      initialRoute: '/home',
-      routes: {
-        '/home': (context) => HomeScreen(
-          onItemTapped: _onItemTapped,
-          selectedIndex: _selectedIndex,
-        ),
-        '/': (context) => RegistrationScreen(
-          onItemTapped: _onItemTapped,
-          selectedIndex: _selectedIndex,
-        ),
-      },
-    );
-  }
-}
-*/

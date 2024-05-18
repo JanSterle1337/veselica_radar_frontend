@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:veselica_radar/services/auth_provider.dart';
 import '../dto/user_register_dto.dart';
 import '../services/registration_service.dart';
 
@@ -51,16 +54,28 @@ class _RegistrationFormState extends State<RegistrationForm> {
         });
 
         if (response.statusCode == 200 || response.statusCode == 201) {
+
+          final responseData = jsonDecode(response.body);
+          final token = responseData['token'];
+          final role = responseData['role'];
+
+          Provider.of<AuthProvider>(context, listen: false).login(token, role);
+
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Registration successful!')),
           );
-          Navigator.pushReplacementNamed(context, '/home');
+          Navigator.pushReplacementNamed(context, '/');
         } else if (response.statusCode == 500) {
           print('Response body: ${response.body}');
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Internal Server Error. Please try again later.')),
           );
-        } else {
+        } else if (response.statusCode == 422) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Either email is already taken or password is too short.'))
+          );
+        }
+        else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Registration failed.')),
           );
@@ -82,10 +97,6 @@ class _RegistrationFormState extends State<RegistrationForm> {
           SnackBar(content: Text('An error occurred. Please try again.')),
         );
       }
-
-      //bool success = await _registrationService.registerUser(newUser).timeout(const Duration(seconds: 3));
-
-
     }
   }
 
