@@ -49,6 +49,8 @@ class _LoginFormState extends State<LoginForm> {
           final role = responseData['role'];
           final userId = responseData['user_id'];
 
+          print("Response data: ${responseData}");
+
           Provider.of<AuthProvider>(context, listen: false).login(token, role, userId);
 
           ScaffoldMessenger.of(context).showSnackBar(

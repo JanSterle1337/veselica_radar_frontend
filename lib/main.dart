@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:veselica_radar/screens/login_screen.dart';
+import 'package:veselica_radar/screens/user_profile_screen.dart';
 import 'services/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'screens/home_screen.dart';
@@ -51,28 +52,30 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _handleLogout(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    authProvider.logout();
-    dynamic isAuthenticated = authProvider.isAuthenticated;
-    print('Is authenticated: ${isAuthenticated}');
-
+    Provider.of<AuthProvider>(context, listen: false).logout();
+    setState(() {
+      _selectedIndex = 0; // Optionally reset the selected index
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-
-    final authProvider = Provider.of<AuthProvider>(context);
-    final isAuthenticated = authProvider.isAuthenticated;
-
+    bool isAuthenticated = Provider.of<AuthProvider>(context).isAuthenticated;
     return Scaffold(
       body: IndexedStack(
         index: _selectedIndex,
-        children: <Widget>[
+        children: isAuthenticated
+            ? <Widget>[
+          HomeScreen(),
+          UserProfileScreen(),
+        ]
+            : <Widget>[
           HomeScreen(),
           RegistrationScreen(
             onSuccess: () {
               setState(() {
                 _selectedIndex = 0;
+                isAuthenticated = true; // Update the state on success
               });
             },
           ),
@@ -80,61 +83,51 @@ class _MainScreenState extends State<MainScreen> {
               onSuccess: () {
                 setState(() {
                   _selectedIndex = 0;
+                  isAuthenticated = true; // Update the state on success
                 });
               })
         ],
       ),
-      bottomNavigationBar: isAuthenticated ? BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
+      bottomNavigationBar: BottomNavigationBar(
+        items: isAuthenticated
+            ? <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.logout),
             label: 'Logout',
           ),
+        ]
+            : <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.app_registration),
+            label: 'Register',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.login),
+            label: 'Login',
+          ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.amber[800],
         onTap: (index) {
-          if (isAuthenticated && index == 1) {
-            print("Handlamo login");
+          if (isAuthenticated && index == 2) {
             _handleLogout(context);
           } else {
-            print("change view wuhuuu");
             _onItemTapped(index);
           }
         },
-      ) : BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.app_registration),
-              label: 'Register',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.login),
-              label: 'Login'
-            )
-          ],
-
-          currentIndex: _selectedIndex,
-          selectedItemColor: Colors.amber[800],
-          onTap: (index) {
-          if (isAuthenticated && index == 1) {
-            print("Handlamo login");
-            _handleLogout(context);
-          } else {
-            print("change view wuhuuu");
-            _onItemTapped(index);
-          }
-      },
       ),
-
     );
   }
 }
