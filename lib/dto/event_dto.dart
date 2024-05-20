@@ -53,24 +53,6 @@ class EventDto {
     );
   }
 
-  /*factory EventDto.fromJson(Map<String, dynamic> json) {
-    return EventDto(
-        name: json['name'],
-        location: json['location'],
-        isEntranceFee: json['isEntranceFee'],
-        entranceFee: json['entranceFee'],
-        eventDate: DateTime.parse(json['eventDate']),
-        startingHour:  DateTime.parse(json['startingHour']),
-        endingHour: DateTime.parse(json['endingHour']),
-        latitude: json['latitude'],
-        longitude: json['longitude'],
-        createdAt: DateTime.parse(json['created_at']),
-        updatedAt: DateTime.parse(json['updated_at']),
-        userId: json['user'],
-        isConfirmed: json['isConfirmed']
-    );
-  }*/
-
   Map<String, dynamic> toJson() {
     return {
       'id': id,
