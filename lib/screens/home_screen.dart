@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:veselica_radar/widgets/bottom_navigation.dart';
-
+import 'add_event_screen.dart';
 
 class HomeScreen extends StatefulWidget {
 
@@ -22,13 +22,24 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home')
+        title: const Text('Events'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AddEventScreen()),
+              );
+            },
+          ),
+        ],
       ),
       body: GoogleMap(
         onMapCreated: _onMapCreated,
         initialCameraPosition: CameraPosition(
           target: _center,
-          zoom: 8.0
+          zoom: 8.0,
         ),
       ),
     );

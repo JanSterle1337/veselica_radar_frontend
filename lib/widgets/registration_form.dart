@@ -44,6 +44,8 @@ class _RegistrationFormState extends State<RegistrationForm> {
         role: 'user',
       );
 
+
+
       try {
         final response = await _registrationService
             .registerUser(newUser)
