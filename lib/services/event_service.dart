@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:veselica_radar/dto/event_dto.dart';
 import '../dto/add_event_dto.dart';
 
 class EventService {
@@ -51,4 +52,27 @@ class EventService {
     return response;
 
   }
+
+  Future<List<EventDto>> getAllEvents() async {
+
+    print("Delamo request na backend da dobimo evente");
+
+    const String url = 'http://10.0.2.2:7000/api/events';
+
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = jsonDecode(response.body);
+
+      print("RESPONSE BODY: ${response.body}");
+      //print("Baje da smo dobil data: ${data.toString()}");
+
+      return data.map((json) => EventDto.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to laod events');
+    }
+
+  }
+
+
 }
