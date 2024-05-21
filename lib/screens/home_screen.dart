@@ -2,10 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:veselica_radar/services/auth_provider.dart';
 import 'package:veselica_radar/widgets/bottom_navigation.dart';
 import '../services/event_service.dart';
 import 'add_event_screen.dart';
 import '../dto/event_dto.dart';
+import '../services/auth_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -16,11 +19,13 @@ class _HomeScreenState extends State<HomeScreen> {
   late GoogleMapController mapController;
   final LatLng _center = const LatLng(46.149, 15.2);
   late Future<List<EventDto>> _events = Future.value([]);
+  bool _attendanceStatus = false;
   DateTime? selectedDate;
 
   @override
   void initState() {
     super.initState();
+    //final authProvider = Provider.of<AuthProvider>(context, listen: false);
     fetchEvents();
   }
 
@@ -64,19 +69,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Events'),
         actions: [
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AddEventScreen()),
-              );
-            },
-          ),
+          if (authProvider.isAuthenticated)
+            IconButton(
+              icon: Icon(Icons.add),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddEventScreen()),
+                );
+              },
+            ),
         ],
       ),
       body: Column(
@@ -140,6 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Set<Marker> _buildMarkers(List<EventDto> events) {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
     return events.map((event) {
       return Marker(
         markerId: MarkerId(event.name),
@@ -147,8 +157,97 @@ class _HomeScreenState extends State<HomeScreen> {
         infoWindow: InfoWindow(
           title: event.name,
           snippet: event.location,
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                    title: Text(
+                      event.name,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    content: SingleChildScrollView(
+                      child: ListBody(
+                        children: [
+                          _buildEventDetail('Location', event.location),
+                          _buildEventDetail('Entrance Fee', event.isEntranceFee ? event.entranceFee.toString() : 'No'),
+                          _buildEventDetail('Event Date', event.eventDate.toLocal().toString().split(' ')[0]),
+                          _buildEventDetail('Starting Hour', event.startingHour),
+                          _buildEventDetail('Ending Hour', event.endingHour),
+                          _buildEventDetail('Latitude', event.latitude.toString()),
+                          _buildEventDetail('Longitude', event.longitude.toString()),
+                          _buildEventDetail('Created At', event.createdAt.toLocal().toString().split(' ')[0]),
+                          _buildEventDetail('Updated At', event.updatedAt.toLocal().toString().split(' ')[0]),
+                        ],
+                      ),
+                    ),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('Close'),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
         ),
       );
     }).toSet();
+  }
+
+  Widget _buildEventDetail(String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '$title: ',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(
+                color: Colors.black54,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _updateAttendanceStatus(bool newValue) async {
+    if (newValue != null) {
+      // Implement logic to send the updated status to the backend
+      try {
+
+        if (newValue == true) {
+          _attendanceStatus = true;
+        } else {
+          _attendanceStatus = false;
+        }
+
+        print("SETTAMO STATUS NA ${newValue} and baje bomo klical backend endpoint");
+
+        // Call the backend API to update the status
+        // For example:
+        // await EventService().updateAttendanceStatus(newValue);
+        // Once the status is updated successfully, you may want to display a success message or perform other actions
+      } catch (error) {
+        // Handle any errors that occur during the API call
+        print('Error updating attendance status: $error');
+        // You may want to display an error message to the user
+      }
+    }
   }
 }

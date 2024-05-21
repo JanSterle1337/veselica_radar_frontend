@@ -6,6 +6,7 @@ import 'services/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'screens/home_screen.dart';
 import 'screens/registration_screen.dart';
+import 'screens/event_screen.dart';
 import 'widgets/bottom_navigation.dart';
 
 
@@ -25,13 +26,6 @@ class MyApp extends StatelessWidget {
         ),
           home: MainScreen(),
         )
-    );
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MainScreen(),
     );
   }
 }
@@ -67,6 +61,7 @@ class _MainScreenState extends State<MainScreen> {
         children: isAuthenticated
             ? <Widget>[
           HomeScreen(),
+          EventsScreen(),
           UserProfileScreen(),
         ]
             : <Widget>[
@@ -96,6 +91,10 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.event),
+            label: 'Event',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Profile',
           ),
@@ -118,10 +117,14 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Login',
           ),
         ],
+        selectedItemColor: Colors.blueAccent[200],
+        unselectedItemColor: Colors.black,
+        selectedLabelStyle: TextStyle(color: Colors.black),
+        unselectedLabelStyle: TextStyle(color: Colors.black),
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
+
         onTap: (index) {
-          if (isAuthenticated && index == 2) {
+          if (isAuthenticated && index == 3) {
             _handleLogout(context);
           } else {
             _onItemTapped(index);
